@@ -52,7 +52,7 @@ def annotate_vcf(opened_vcf, out_path):
         db_chr, db_pos, db_id, db_args = unpack_line(db_line)
         for vcf_line in opened_vcf:
             line_c += 1
-            if line_c % 10000 == 0:
+            if line_c % 100000 == 0:
                 print(line_c)
             try:
                 vcf_chr, vcf_pos, vcf_id, vcf_args = unpack_line(vcf_line)
@@ -92,7 +92,7 @@ def read_vcfs():
         for line in master_list:
             if line[0] == "#":
                 continue
-            if counter % 10 == 0:
+            if counter % 1 == 0:
                 print('Made {} vcfs, annotated: {}'.format(counter, annotated))
             split_line = line.strip('\n').split("\t")
             vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf")

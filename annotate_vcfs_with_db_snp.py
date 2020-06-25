@@ -94,8 +94,6 @@ def read_vcfs():
         for line in master_list:
             if line[0] == "#":
                 continue
-            if counter % 10 == 0:
-                print('Made {} vcfs, annotated: {}'.format(counter, annotated))
             split_line = line.strip('\n').split("\t")
             vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf")
             if os.path.isfile(vcf_path):
@@ -105,6 +103,8 @@ def read_vcfs():
                         os.mkdir(name)
                     annotated += annotate_vcf(vcf_buffer, os.path.join(name, split_line[6] + '.vcf'))
                     counter += 1
+                    if counter % 10 == 0:
+                        print('Made {} vcfs, annotated: {}'.format(counter, annotated))
             if len(split_line) > 10:
                 vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf", ctrl=True)
                 if vcf_path in counted_controls:
@@ -116,6 +116,8 @@ def read_vcfs():
                             os.mkdir(name)
                         annotated += annotate_vcf(vcf_buffer, os.path.join(name, split_line[14] + '.vcf'))
                         counter += 1
+                        if counter % 10 == 0:
+                            print('Made {} vcfs, annotated: {}'.format(counter, annotated))
                 counted_controls.add(vcf_path)
     return annotated
 

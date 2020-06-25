@@ -4,7 +4,7 @@ import string
 
 GTRD_slice_path="/home/abramov/PARAMETERS/Master-lines.tsv"
 alignments_path="/home/abramov/Alignments/"
-dbsnp_path = "/home/abramov/ParamsForSign/00-All.sorted.vcf.gz"
+dbsnp_path = "/home/abramov/ParamsForSign/00-All.sorted.vcf"
 sorted_chromosomes = ['chr' + str(i) for i in range(1, 23)] + ['chrX', 'chrY']
 out_folder = "/home/abramov/Signatures/CellTypes/"
 

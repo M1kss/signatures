@@ -79,10 +79,13 @@ def annotate_vcf(opened_vcf, out_path):
 def read_vcfs():
     annotated = 0
     counted_controls = set()
+    counter = 0
     with open(GTRD_slice_path, "r") as master_list:
         for line in master_list:
             if line[0] == "#":
                 continue
+            if counter % 500 == 0:
+                print('Made {} vcfs'.format(counter))
             split_line = line.strip('\n').split("\t")
             vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf")
             if os.path.isfile(vcf_path):
@@ -91,6 +94,7 @@ def read_vcfs():
                     if not os.path.isdir(name):
                         os.mkdir(name)
                     annotated += annotate_vcf(vcf_buffer, os.path.join(name, split_line[6] + '.vcf'))
+                    counter += 1
             if len(split_line) > 10:
                 vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf", ctrl=True)
                 if vcf_path in counted_controls:
@@ -101,6 +105,7 @@ def read_vcfs():
                         if not os.path.isdir(name):
                             os.mkdir(name)
                         annotated += annotate_vcf(vcf_buffer, os.path.join(name, split_line[14] + '.vcf'))
+                        counter += 1
                 counted_controls.add(vcf_path)
     return annotated
 

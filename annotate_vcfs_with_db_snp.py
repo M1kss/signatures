@@ -4,7 +4,7 @@ import string
 
 GTRD_slice_path="/home/abramov/PARAMETERS/Master-lines.tsv"
 alignments_path="/home/abramov/Alignments/"
-dbsnp_path = "/home/abramov/..."
+dbsnp_path = "/home/abramov/ParamsForSign/00-All.vcf.gz"
 sorted_chromosomes = ['chr' + str(i) for i in range(1, 23)] + ['chrX', 'chrY']
 out_folder = "/home/abramov/Signatures/CellTypes"
 
@@ -41,7 +41,7 @@ def unpack_line(line):
 
 def annotate_vcf(opened_vcf, out_path):
     annotated = 0
-    with open(dbsnp_path) as snps, open(out_path) as out:
+    with gzip.open(dbsnp_path, "rt") as snps, open(out_path) as out:
         db_line = snps.readline()
         while db_line.startswith("#"):
             db_line = snps.readline()

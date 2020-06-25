@@ -42,7 +42,8 @@ def unpack_line(line):
 def annotate_vcf(opened_vcf, out_path):
     annotated = 0
     inv_chr_set = set()
-    with gzip.open(dbsnp_path, "rt") as snps, open(out_path, 'w') as out:
+    db_ended = False
+    with open(dbsnp_path, "r") as snps, open(out_path, 'w') as out:
         db_line = snps.readline()
         while db_line.startswith("#"):
             db_line = snps.readline()
@@ -50,33 +51,38 @@ def annotate_vcf(opened_vcf, out_path):
             return annotated
         db_chr, db_pos, db_id, db_args = unpack_line(db_line)
         for vcf_line in opened_vcf:
-            try:
-                vcf_chr, vcf_pos, vcf_id, vcf_args = unpack_line(vcf_line)
-            except (ValueError, IndexError):
-                if not vcf_line.startswith('#'):
-                    print('Wrong line: {} {}'.format(opened_vcf.name, vcf_line))
+            if not db_ended:
+                try:
+                    vcf_chr, vcf_pos, vcf_id, vcf_args = unpack_line(vcf_line)
+                except (ValueError, IndexError):
+                    if not vcf_line.startswith('#'):
+                        print('Wrong line: {} {}'.format(opened_vcf.name, vcf_line))
+                    out.write(vcf_line)
+                    continue
+                if vcf_chr not in sorted_chromosomes:
+                    if vcf_chr not in inv_chr_set:
+                        print('Invalid chromosome: {}')
+                        inv_chr_set.add(vcf_chr)
+                    continue
+                if not len(vcf_line[3]) == 1 or not len(vcf_line[4]) == 1:
+                    continue
+                if vcf_line[3] not in Nucleotides or vcf_line[4] not in Nucleotides:
+                    continue
+                while vcf_chr != 'chr' + db_chr or vcf_pos > db_pos:
+                    db_line = snps.readline()
+                    if not db_line:
+                        db_ended = True
+                        out.write(vcf_line)
+                        continue
+                    db_chr, db_pos, db_id, db_args = unpack_line(db_line)
+                if vcf_pos == db_pos:
+                    if vcf_id and vcf_id != db_id:
+                        print('Mismatch! {} {} {} {} {}'.format(opened_vcf.name, vcf_chr, vcf_pos, vcf_id, db_id))
+                    vcf_id = db_id
+                    annotated += 1
+                out.write(pack([vcf_chr, vcf_pos, vcf_id] + vcf_args))
+            else:
                 out.write(vcf_line)
-                continue
-            if vcf_chr not in sorted_chromosomes:
-                if vcf_chr not in inv_chr_set:
-                    print('Invalid chromosome: {}')
-                    inv_chr_set.add(vcf_chr)
-                continue
-            if not len(vcf_line[3]) == 1 or not len(vcf_line[4]) == 1:
-                continue
-            if vcf_line[3] not in Nucleotides or vcf_line[4] not in Nucleotides:
-                continue
-            while vcf_chr != 'chr' + db_chr or vcf_pos > db_pos:
-                db_line = snps.readline()
-                if not db_line:
-                    return annotated
-                db_chr, db_pos, db_id, db_args = unpack_line(db_line)
-            if vcf_pos == db_pos:
-                if vcf_id and vcf_id != db_id:
-                    print('Mismatch! {} {} {} {} {}'.format(opened_vcf.name, vcf_chr, vcf_pos, vcf_id, db_id))
-                vcf_id = db_id
-                annotated += 1
-            out.write(pack([vcf_chr, vcf_pos, vcf_id] + vcf_args))
     return annotated
 
 

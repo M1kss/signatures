@@ -41,7 +41,6 @@ def unpack_line(line):
 
 def annotate_vcf(opened_vcf, out_path):
     annotated = 0
-    line_c = 0
     inv_chr_set = set()
     with gzip.open(dbsnp_path, "rt") as snps, open(out_path, 'w') as out:
         db_line = snps.readline()
@@ -51,9 +50,6 @@ def annotate_vcf(opened_vcf, out_path):
             return annotated
         db_chr, db_pos, db_id, db_args = unpack_line(db_line)
         for vcf_line in opened_vcf:
-            line_c += 1
-            if line_c % 100000 == 0:
-                print(line_c)
             try:
                 vcf_chr, vcf_pos, vcf_id, vcf_args = unpack_line(vcf_line)
             except (ValueError, IndexError):
@@ -76,6 +72,7 @@ def annotate_vcf(opened_vcf, out_path):
                     return annotated
                 db_chr, db_pos, db_id, db_args = unpack_line(db_line)
             if vcf_pos == db_pos:
+                print('i annotate')
                 if vcf_id and vcf_id != db_id:
                     print('Mismatch! {} {} {} {} {}'.format(opened_vcf.name, vcf_chr, vcf_pos, vcf_id, db_id))
                 vcf_id = db_id
@@ -92,8 +89,6 @@ def read_vcfs():
         for line in master_list:
             if line[0] == "#":
                 continue
-            if counter % 1 == 0:
-                print('Made {} vcfs, annotated: {}'.format(counter, annotated))
             split_line = line.strip('\n').split("\t")
             vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf")
             if os.path.isfile(vcf_path):
@@ -103,6 +98,8 @@ def read_vcfs():
                         os.mkdir(name)
                     annotated += annotate_vcf(vcf_buffer, os.path.join(name, split_line[6] + '.vcf'))
                     counter += 1
+                    if counter % 10 == 0:
+                        print('Made {} vcfs, annotated: {}'.format(counter, annotated))
             if len(split_line) > 10:
                 vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf", ctrl=True)
                 if vcf_path in counted_controls:
@@ -114,6 +111,8 @@ def read_vcfs():
                             os.mkdir(name)
                         annotated += annotate_vcf(vcf_buffer, os.path.join(name, split_line[14] + '.vcf'))
                         counter += 1
+                        if counter % 10 == 0:
+                            print('Made {} vcfs, annotated: {}'.format(counter, annotated))
                 counted_controls.add(vcf_path)
     return annotated
 

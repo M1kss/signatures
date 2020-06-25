@@ -41,7 +41,7 @@ def unpack_line(line):
 
 def annotate_vcf(opened_vcf, out_path):
     annotated = 0
-    with gzip.open(dbsnp_path, "rt") as snps, open(out_path) as out:
+    with gzip.open(dbsnp_path, "rt") as snps, open(out_path, 'w') as out:
         db_line = snps.readline()
         while db_line.startswith("#"):
             db_line = snps.readline()

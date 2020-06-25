@@ -88,7 +88,7 @@ def read_vcfs():
         for line in master_list:
             if line[0] == "#":
                 continue
-            if counter % 500 == 0:
+            if counter % 10 == 0:
                 print('Made {} vcfs, annotated: {}'.format(counter, annotated))
             split_line = line.strip('\n').split("\t")
             vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf")

@@ -41,6 +41,7 @@ def unpack_line(line):
 
 def annotate_vcf(opened_vcf, out_path):
     annotated = 0
+    line_c = 0
     inv_chr_set = set()
     with gzip.open(dbsnp_path, "rt") as snps, open(out_path, 'w') as out:
         db_line = snps.readline()
@@ -50,6 +51,9 @@ def annotate_vcf(opened_vcf, out_path):
             return annotated
         db_chr, db_pos, db_id, db_args = unpack_line(db_line)
         for vcf_line in opened_vcf:
+            line_c += 1
+            if line_c % 10000 == 0:
+                print(line_c)
             try:
                 vcf_chr, vcf_pos, vcf_id, vcf_args = unpack_line(vcf_line)
             except (ValueError, IndexError):

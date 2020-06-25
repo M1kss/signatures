@@ -95,7 +95,7 @@ def read_vcfs():
                         name = os.path.join(out_folder, remove_punctuation(split_line[12]))
                         if not os.path.isdir(name):
                             os.mkdir(name)
-                        annotated += annotate_vcf(vcf_buffer, os.path.join(name, split_line[11] + '.vcf'))
+                        annotated += annotate_vcf(vcf_buffer, os.path.join(name, split_line[14] + '.vcf'))
                 counted_controls.add(vcf_path)
     return annotated
 

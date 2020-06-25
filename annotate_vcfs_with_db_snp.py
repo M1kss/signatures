@@ -6,7 +6,7 @@ GTRD_slice_path="/home/abramov/PARAMETERS/Master-lines.tsv"
 alignments_path="/home/abramov/Alignments/"
 dbsnp_path = "/home/abramov/ParamsForSign/00-All.vcf.gz"
 sorted_chromosomes = ['chr' + str(i) for i in range(1, 23)] + ['chrX', 'chrY']
-out_folder = "/home/abramov/Signatures/CellTypes"
+out_folder = "/home/abramov/Signatures/CellTypes/"
 
 Nucleotides = {'A', 'T', 'G', 'C'}
 
@@ -73,6 +73,7 @@ def annotate_vcf(opened_vcf, out_path):
 
 def read_vcfs():
     annotated = 0
+    counted_controls = set()
     with open(GTRD_slice_path, "r") as master_list:
         for line in master_list:
             if line[0] == "#":
@@ -81,12 +82,19 @@ def read_vcfs():
             vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf")
             if os.path.isfile(vcf_path):
                 with gzip.open(vcf_path, "rt") as vcf_buffer:
-                    annotated += annotate_vcf(vcf_buffer, os.path.join(out_folder, remove_punctuation(line[4])))
+                    name = os.path.join(out_folder, remove_punctuation(split_line[4]))
+                    if not os.path.isdir(name):
+                        os.mkdir(name)
+                    annotated += annotate_vcf(vcf_buffer, os.path.join(name, split_line[6] + '.vcf'))
             if len(split_line) > 10:
                 vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf", ctrl=True)
+                if vcf_path in counted_controls:
+                    continue
                 if os.path.isfile(vcf_path):
                     with gzip.open(vcf_path, "rt") as vcf_buffer:
-                        annotated += annotate_vcf(vcf_buffer, os.path.join(out_folder, remove_punctuation(line[12])))
+                        name = os.path.join(out_folder, remove_punctuation(line[12]))
+                        annotated += annotate_vcf(vcf_buffer, os.path.join(name, split_line[11] + '.vcf'))
+                counted_controls.add(vcf_path)
     return annotated
 
 

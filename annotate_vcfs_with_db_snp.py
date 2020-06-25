@@ -45,6 +45,8 @@ def annotate_vcf(opened_vcf, out_path):
         db_line = snps.readline()
         while db_line.startswith("#"):
             db_line = snps.readline()
+        if not db_line:
+            return annotated
         db_chr, db_pos, db_id, db_args = unpack_line(db_line)
         for vcf_line in opened_vcf:
             try:
@@ -61,6 +63,8 @@ def annotate_vcf(opened_vcf, out_path):
                 continue
             while vcf_chr != db_chr or vcf_pos > db_pos:
                 db_line = snps.readline()
+                if not db_line:
+                    return annotated
                 db_chr, db_pos, db_id, db_args = unpack_line(db_line)
             if vcf_pos == db_pos:
                 if vcf_id and vcf_id != db_id:

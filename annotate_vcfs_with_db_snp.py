@@ -51,8 +51,9 @@ def annotate_vcf(opened_vcf, out_path):
         for vcf_line in opened_vcf:
             try:
                 vcf_chr, vcf_pos, vcf_id, vcf_args = unpack_line(vcf_line)
-            except ValueError:
-                print('Wrong line: {} {}'.format(opened_vcf.name, vcf_line))
+            except (ValueError, IndexError):
+                if not vcf_line.startswith('#'):
+                    print('Wrong line: {} {}'.format(opened_vcf.name, vcf_line))
                 out.write(vcf_line)
                 continue
             if vcf_chr not in sorted_chromosomes:

@@ -41,6 +41,7 @@ def unpack_line(line):
 
 def annotate_vcf(opened_vcf, out_path):
     annotated = 0
+    inv_chr_set = set()
     with gzip.open(dbsnp_path, "rt") as snps, open(out_path, 'w') as out:
         db_line = snps.readline()
         while db_line.startswith("#"):
@@ -57,12 +58,15 @@ def annotate_vcf(opened_vcf, out_path):
                 out.write(vcf_line)
                 continue
             if vcf_chr not in sorted_chromosomes:
+                if vcf_chr not in inv_chr_set:
+                    print('Invalid chromosome: {}')
+                    inv_chr_set.add(vcf_chr)
                 continue
             if not len(vcf_line[3]) == 1 or not len(vcf_line[4]) == 1:
                 continue
             if vcf_line[3] not in Nucleotides or vcf_line[4] not in Nucleotides:
                 continue
-            while vcf_chr != db_chr or vcf_pos > db_pos:
+            while vcf_chr != 'chr' + db_chr or vcf_pos > db_pos:
                 db_line = snps.readline()
                 if not db_line:
                     return annotated

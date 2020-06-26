@@ -64,11 +64,11 @@ def annotate_vcf(opened_vcf, out_path):
                         print('Invalid chromosome: {}')
                         inv_chr_set.add(vcf_chr)
                     continue
-                print(db_line)
                 if not len(vcf_line[3]) == 1 or not len(vcf_line[4]) == 1:
                     continue
                 if vcf_line[3] not in Nucleotides or vcf_line[4] not in Nucleotides:
                     continue
+                print(db_line, vcf_pos)
                 while vcf_chr != 'chr' + db_chr or vcf_pos > db_pos:
                     db_line = snps.readline()
                     if not db_line:

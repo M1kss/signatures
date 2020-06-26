@@ -39,7 +39,7 @@ def unpack_line(line):
     return a[0], int(a[1]), a[2], a[3:]  # chr, pos, id
 
 
-def annotate_vcf(opened_vcf, out_path):
+def annotate_vcf(opened_vcf, name, out_path):
     annotated = 0
     inv_chr_set = set()
     db_ended = False
@@ -56,7 +56,7 @@ def annotate_vcf(opened_vcf, out_path):
                     vcf_chr, vcf_pos, vcf_id, vcf_args = unpack_line(vcf_line)
                 except (ValueError, IndexError):
                     if not vcf_line.startswith('#'):
-                        print('Wrong line: {} {}'.format(opened_vcf.name, vcf_line))
+                        print('Wrong line: {} {}'.format(name, vcf_line))
                     out.write(vcf_line)
                     continue
                 if vcf_chr not in sorted_chromosomes:
@@ -75,10 +75,10 @@ def annotate_vcf(opened_vcf, out_path):
                         out.write(vcf_line)
                         continue
                     db_chr, db_pos, db_id, db_args = unpack_line(db_line)
-                print("Now doing {}, pos {}, name {}".format(vcf_chr, vcf_pos, opened_vcf.name))
+                print("Now doing {}, pos {}, name {}".format(vcf_chr, vcf_pos, name))
                 if vcf_pos == db_pos and db_args[1] == vcf_args[1] and db_args[0] == vcf_args[0]:
                     if vcf_id != "." and vcf_id != db_id:
-                        print('Mismatch! {} {} {} {} {}'.format(opened_vcf.name, vcf_chr, vcf_pos, vcf_id, db_id))
+                        print('Mismatch! {} {} {} {} {}'.format(name, vcf_chr, vcf_pos, vcf_id, db_id))
                     vcf_id = db_id
                     annotated += 1
                 out.write(pack([vcf_chr, vcf_pos, vcf_id] + vcf_args))
@@ -116,7 +116,8 @@ def read_vcfs():
                     if not os.path.isdir(name):
                         os.mkdir(name)
 
-                    annotated += annotate_vcf(sort_vcf(vcf_buffer), os.path.join(name, split_line[6] + '.vcf'))
+                    annotated += annotate_vcf(sort_vcf(vcf_buffer),
+                                              vcf_buffer.name, os.path.join(name, split_line[6] + '.vcf'))
                     counter += 1
                     if counter % 10 == 0:
                         print('Made {} vcfs, annotated: {}'.format(counter, annotated))
@@ -129,7 +130,8 @@ def read_vcfs():
                         name = os.path.join(out_folder, remove_punctuation(split_line[12]))
                         if not os.path.isdir(name):
                             os.mkdir(name)
-                        annotated += annotate_vcf(sort_vcf(vcf_buffer), os.path.join(name, split_line[14] + '.vcf'))
+                        annotated += annotate_vcf(sort_vcf(vcf_buffer),
+                                                  vcf_buffer.name, os.path.join(name, split_line[14] + '.vcf'))
                         counter += 1
                         if counter % 10 == 0:
                             print('Made {} vcfs, annotated: {}'.format(counter, annotated))

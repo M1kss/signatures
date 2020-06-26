@@ -70,6 +70,8 @@ def annotate_vcf(opened_vcf, name, out_path):
                     continue
                 while vcf_chr != 'chr' + db_chr or vcf_pos > db_pos:
                     db_line = snps.readline()
+                    while db_line.startswith("#"):
+                        db_line = snps.readline()
                     if not db_line:
                         db_ended = True
                         out.write(vcf_line)

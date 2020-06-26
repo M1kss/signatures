@@ -59,7 +59,6 @@ def annotate_vcf(opened_vcf, out_path):
                         print('Wrong line: {} {}'.format(opened_vcf.name, vcf_line))
                     out.write(vcf_line)
                     continue
-                vcf_line = vcf_line.split("\t")
                 if vcf_chr not in sorted_chromosomes:
                     if vcf_chr not in inv_chr_set:
                         print('Invalid chromosome: {}')

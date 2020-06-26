@@ -75,7 +75,7 @@ def annotate_vcf(opened_vcf, out_path):
                         out.write(vcf_line)
                         continue
                     db_chr, db_pos, db_id, db_args = unpack_line(db_line)
-                print("Now doing chr {}, name {}".format(vcf_chr, opened_vcf.name))
+                print("Now doing {}, pos {}, name {}".format(vcf_chr, vcf_pos, opened_vcf.name))
                 if vcf_pos == db_pos and db_args[1] == vcf_args[1] and db_args[0] == vcf_args[0]:
                     if vcf_id != "." and vcf_id != db_id:
                         print('Mismatch! {} {} {} {} {}'.format(opened_vcf.name, vcf_chr, vcf_pos, vcf_id, db_id))
@@ -95,7 +95,6 @@ def read_vcfs():
         for line in master_list:
             if line[0] == "#":
                 continue
-            print(line)
             split_line = line.strip('\n').split("\t")
             vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf")
             if os.path.isfile(vcf_path):

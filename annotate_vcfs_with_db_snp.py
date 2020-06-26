@@ -94,6 +94,7 @@ def read_vcfs():
         for line in master_list:
             if line[0] == "#":
                 continue
+            print(line)
             split_line = line.strip('\n').split("\t")
             vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf")
             if os.path.isfile(vcf_path):

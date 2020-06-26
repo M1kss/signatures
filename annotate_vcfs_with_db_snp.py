@@ -76,6 +76,7 @@ def annotate_vcf(opened_vcf, out_path):
                         continue
                     db_chr, db_pos, db_id, db_args = unpack_line(db_line)
                 if vcf_pos == db_pos:
+                    print(vcf_id, db_id)
                     if vcf_id and vcf_id != db_id:
                         print('Mismatch! {} {} {} {} {}'.format(opened_vcf.name, vcf_chr, vcf_pos, vcf_id, db_id))
                     vcf_id = db_id

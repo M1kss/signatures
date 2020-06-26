@@ -87,6 +87,19 @@ def annotate_vcf(opened_vcf, out_path):
     return annotated
 
 
+def sort_vcf(vcf_buffer):
+    sorted_lines = []
+    lines_to_remember = []
+    for line in vcf_buffer:
+        if line.startswith("#"):
+            lines_to_remember.append(line)
+        else:
+            if not line.startswith("chr"):
+                print("WTF {}".format(line))
+            sorted_lines.append(line)
+    return lines_to_remember + sorted(sorted_lines)
+
+
 def read_vcfs():
     annotated = 0
     counted_controls = set()
@@ -102,7 +115,8 @@ def read_vcfs():
                     name = os.path.join(out_folder, remove_punctuation(split_line[4]))
                     if not os.path.isdir(name):
                         os.mkdir(name)
-                    annotated += annotate_vcf(vcf_buffer, os.path.join(name, split_line[6] + '.vcf'))
+
+                    annotated += annotate_vcf(sort_vcf(vcf_buffer), os.path.join(name, split_line[6] + '.vcf'))
                     counter += 1
                     if counter % 10 == 0:
                         print('Made {} vcfs, annotated: {}'.format(counter, annotated))
@@ -115,7 +129,7 @@ def read_vcfs():
                         name = os.path.join(out_folder, remove_punctuation(split_line[12]))
                         if not os.path.isdir(name):
                             os.mkdir(name)
-                        annotated += annotate_vcf(vcf_buffer, os.path.join(name, split_line[14] + '.vcf'))
+                        annotated += annotate_vcf(sort_vcf(vcf_buffer), os.path.join(name, split_line[14] + '.vcf'))
                         counter += 1
                         if counter % 10 == 0:
                             print('Made {} vcfs, annotated: {}'.format(counter, annotated))

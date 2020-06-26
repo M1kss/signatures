@@ -35,7 +35,7 @@ def create_path_from_gtrd_function(line, for_what, ctrl=False):
 
 
 def unpack_line(line):
-    a = line.split()
+    a = line.strip("\n").split("\t")
     return a[0], int(a[1]), a[2], a[3:]  # chr, pos, id
 
 

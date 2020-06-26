@@ -97,7 +97,7 @@ def sort_vcf(vcf_buffer):
             if not line.startswith("chr"):
                 print("WTF {}".format(line))
             sorted_lines.append(line)
-    return lines_to_remember + sorted(sorted_lines)
+    return lines_to_remember + sorted(sorted_lines, key=lambda x: x[:x.find("\t")])
 
 
 def read_vcfs():

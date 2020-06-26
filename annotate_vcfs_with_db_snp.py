@@ -65,9 +65,9 @@ def annotate_vcf(opened_vcf, out_path):
                         print('Invalid chromosome: {}')
                         inv_chr_set.add(vcf_chr)
                     continue
-                if not len(vcf_line[3]) == 1 or not len(vcf_line[4]) == 1:
+                if not len(vcf_args[0]) == 1 or not len(vcf_args[2]) == 1:
                     continue
-                if vcf_line[3] not in Nucleotides or vcf_line[4] not in Nucleotides:
+                if vcf_args[0] not in Nucleotides or vcf_args[1] not in Nucleotides:
                     continue
                 while vcf_chr != 'chr' + db_chr or vcf_pos > db_pos:
                     db_line = snps.readline()
@@ -76,8 +76,8 @@ def annotate_vcf(opened_vcf, out_path):
                         out.write(vcf_line)
                         continue
                     db_chr, db_pos, db_id, db_args = unpack_line(db_line)
-                if vcf_pos == db_pos:
-                    if vcf_id and vcf_id != db_id:
+                if vcf_pos == db_pos and db_args[1] == vcf_args[1] and db_args[0] == vcf_args[0]:
+                    if vcf_id != "." and vcf_id != db_id:
                         print('Mismatch! {} {} {} {} {}'.format(opened_vcf.name, vcf_chr, vcf_pos, vcf_id, db_id))
                     vcf_id = db_id
                     annotated += 1

@@ -50,6 +50,7 @@ def annotate_vcf(opened_vcf, out_path):
         if not db_line:
             return annotated
         db_chr, db_pos, db_id, db_args = unpack_line(db_line)
+        print(db_line)
         for vcf_line in opened_vcf:
             if not db_ended:
                 try:

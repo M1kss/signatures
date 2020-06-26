@@ -65,7 +65,7 @@ def annotate_vcf(opened_vcf, out_path):
                         print('Invalid chromosome: {}')
                         inv_chr_set.add(vcf_chr)
                     continue
-                if not len(vcf_args[0]) == 1 or not len(vcf_args[2]) == 1:
+                if not len(vcf_args[0]) == 1 or not len(vcf_args[1]) == 1:
                     continue
                 if vcf_args[0] not in Nucleotides or vcf_args[1] not in Nucleotides:
                     continue

@@ -50,7 +50,6 @@ def annotate_vcf(opened_vcf, out_path):
         if not db_line:
             return annotated
         db_chr, db_pos, db_id, db_args = unpack_line(db_line)
-        print(db_line)
         for vcf_line in opened_vcf:
             if not db_ended:
                 try:
@@ -65,6 +64,7 @@ def annotate_vcf(opened_vcf, out_path):
                         print('Invalid chromosome: {}')
                         inv_chr_set.add(vcf_chr)
                     continue
+                print(db_line)
                 if not len(vcf_line[3]) == 1 or not len(vcf_line[4]) == 1:
                     continue
                 if vcf_line[3] not in Nucleotides or vcf_line[4] not in Nucleotides:

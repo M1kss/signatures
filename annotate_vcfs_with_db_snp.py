@@ -107,7 +107,7 @@ def read_vcfs():
     counted_controls = set()
     counter = 0
     with open(GTRD_slice_path, "r") as master_list:
-        for line in master_list:
+        for i, line in enumerate(master_list):
             if line[0] == "#":
                 continue
             split_line = line.strip('\n').split("\t")
@@ -117,12 +117,12 @@ def read_vcfs():
                     name = os.path.join(out_folder, remove_punctuation(split_line[4]))
                     if not os.path.isdir(name):
                         os.mkdir(name)
-
-                    annotated += annotate_vcf(sort_vcf(vcf_buffer),
-                                              vcf_buffer.name, os.path.join(name, split_line[6] + '.vcf'))
-                    counter += 1
-                    if counter % 10 == 0:
-                        print('Made {} vcfs, annotated: {}'.format(counter, annotated))
+                    if i > 965:
+                        annotated += annotate_vcf(sort_vcf(vcf_buffer),
+                                                  vcf_buffer.name, os.path.join(name, split_line[6] + '.vcf'))
+                        counter += 1
+                        if counter % 10 == 0:
+                            print('Made {} vcfs, annotated: {}'.format(counter, annotated))
             if len(split_line) > 10:
                 vcf_path = create_path_from_gtrd_function(split_line, for_what="vcf", ctrl=True)
                 if vcf_path in counted_controls:
@@ -132,11 +132,12 @@ def read_vcfs():
                         name = os.path.join(out_folder, remove_punctuation(split_line[12]))
                         if not os.path.isdir(name):
                             os.mkdir(name)
-                        annotated += annotate_vcf(sort_vcf(vcf_buffer),
-                                                  vcf_buffer.name, os.path.join(name, split_line[14] + '.vcf'))
-                        counter += 1
-                        if counter % 10 == 0:
-                            print('Made {} vcfs, annotated: {}'.format(counter, annotated))
+                        if i > 965:
+                            annotated += annotate_vcf(sort_vcf(vcf_buffer),
+                                                      vcf_buffer.name, os.path.join(name, split_line[14] + '.vcf'))
+                            counter += 1
+                            if counter % 10 == 0:
+                                print('Made {} vcfs, annotated: {}'.format(counter, annotated))
                 counted_controls.add(vcf_path)
     return annotated
 
